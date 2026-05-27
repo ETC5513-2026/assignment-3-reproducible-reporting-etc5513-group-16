@@ -2,8 +2,9 @@
 
 Group Members:
 
-*
-*
-*
+* Hanwen Liu
+* Pratyush Kumar
+* Chenuli Muthukuda Arachchige
+* Shenyu He
 
-Topic: 
+Topic: Google Play Store App Ratings, Installs and Pricing Analysis
