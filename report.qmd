@@ -1,6 +1,4 @@
 
-
-
 ## RESULTS 
 
 ```{r}
@@ -10,17 +8,6 @@
 
 library(tidyverse)
 library(knitr)
-
-# Load the dataset
-
-apps <- read_csv("data/googleplaystore.csv", show_col_types = FALSE)
-```
-
-
-```{r}
-#| echo: false
-#| message: false
-#| warning: false
 
 # Cleaning derived from from methodolgy section to make result section plot (delete after merging)
 
@@ -36,15 +23,18 @@ apps_clean <- apps |>
   ) |>
   distinct(App, .keep_all = TRUE)
 
+top_categories <- apps_clean |>
+  count(Category, sort = TRUE) |>
+  slice_head(n = 10) |>
+  pull(Category)
+
 ```
 
 ```{r}
 #| label: fig-installs-by-type
-#| fig-cap: "Distribution of app installs by pricing type (free vs paid) on a log scale, highlighting the substantially higher install volumes of free apps"
+#| fig-cap: "Install volume distribution by app pricing type (free vs paid) on a log scale"
 #| fig-width: 7
 #| fig-height: 4
-#| warning: false
-#| message: false
 
 # Boxplot comparing install distributions for free vs paid apps
 
@@ -63,6 +53,39 @@ apps_clean |>
 ```
 
 
-@fig-installs-by-type reveals a stark contrast in install volumes between free and paid apps. Free apps achieve a considerably higher median install count, with a wide interquartile range indicating that top-performing free apps attract massive user bases. Paid apps, by contrast, display a notably lower median with a tightly compressed distribution, suggesting that the majority of paid apps accumulate relatively few installs. The presence of a low outlier further highlights that some paid apps struggle to gain any meaningful traction. This pattern directly addresses the research question: pricing strategy is a fundamental driver of app reach, with free apps commanding exponentially greater user acquisition than their paid counterparts.
+@fig-installs-by-type reveals a stark contrast in install volumes between free and paid apps. Free apps achieve a considerably higher median install count, with a wide interquartile range indicating that top-performing free apps attract massive user bases. Paid apps display a notably lower median with a more tightly compressed distribution, suggesting most paid apps accumulate relatively few installs. A low outlier further highlights that some paid apps struggle to even gain meaningful traction. These findings confirm that pricing strategy is a fundamental driver of app reach, with free apps commanding exponentially greater user acquisition.
+
+
+
+```{r}
+#| label: tbl-category-rating
+#| tbl-cap: "Comparison of free and paid app counts and average ratings across the top 10 categories"
+
+
+apps_clean |>
+  filter(Category %in% top_categories, Type %in% c("Free", "Paid")) |>
+  group_by(Category, Type) |>
+  summarise(
+    Count = n(),
+    Avg_Rating = round(mean(Rating, na.rm = TRUE), 2),
+    .groups = "drop"
+  ) |>
+  pivot_wider(
+    names_from = Type,
+    values_from = c(Count, Avg_Rating),
+    names_glue = "{Type}_{.value}"
+  ) |>
+  rename(
+    "Category" = Category,
+    "Free Apps" = Free_Count,
+    "Paid Apps" = Paid_Count,
+    "Avg Rating (Free Apps)" = Free_Avg_Rating,
+    "Avg Rating (Paid Apps)" = Paid_Avg_Rating
+  ) |>
+  arrange(desc(`Free Apps`)) |>
+  kable()
+```
+
+@tbl-category-rating presents free and paid app counts alongside average ratings across the top 10 categories. Free apps dominate every category in volume, with Family and Game recording the highest counts. Personalization and Game emerge as the highest-rated categories overall, reflecting strong user engagement in entertainment-driven apps. Notably, paid apps consistently achieve marginally higher average ratings than free apps across most categories, with Personalization and Game showing the most pronounced differences. Finance, however, is a notable exception where free apps outperform. These findings confirm that free apps dominate in quantity, but paid apps deliver slightly higher user satisfaction across most categories.
 
 
