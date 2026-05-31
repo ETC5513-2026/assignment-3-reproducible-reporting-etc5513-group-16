@@ -1,3 +1,21 @@
+---
+title: "Google Play Store App Ratings, Installs and Pricing Analysis"
+author:
+  - name: "Hanwen Liu"
+  - name: "Pratyush Kumar"
+  - name: "Chenuli Muthukuda Arachchige"
+  - name: "Shenyu He"
+format:
+  pdf: 
+    toc: true
+    toc-title: "Table of Contents"  
+bibliography: references.bib
+nocite: '@*'
+execute:
+  echo: false
+  warning: false
+  message: false
+---
 ## Discussion
 The results show that pricing strategy is an important factor in app performance. Free apps receive much higher install volumes than paid apps, which means that users are more likely to download apps when there is no upfront cost. This makes free apps more effective for reaching a large audience.
 However, paid apps often have slightly higher average ratings across most top categories. This may suggest that paid users are more engaged or that paid apps provide more specialised value. Category also matters, as Personalization and Game apps show strong average ratings, while Finance is an exception where free apps perform better than paid apps.
@@ -10,3 +28,4 @@ Developers who aim to increase downloads and expand their market reach should co
 
 For paid apps, developers should focus on delivering clear value and a high-quality user experience. Since paid apps generally have lower install volumes, strong ratings are important for building user trust and justifying the upfront cost. Paid app developers should clearly communicate the app’s benefits through descriptions, screenshots, reviews, and feature lists.
 
+## References
