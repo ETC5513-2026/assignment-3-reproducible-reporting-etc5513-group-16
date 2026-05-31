@@ -1,0 +1,3 @@
+## Discussion
+The results show that pricing strategy is an important factor in app performance. Free apps receive much higher install volumes than paid apps, which means that users are more likely to download apps when there is no upfront cost. This makes free apps more effective for reaching a large audience.
+However, paid apps often have slightly higher average ratings across most top categories. This may suggest that paid users are more engaged or that paid apps provide more specialised value. Category also matters, as Personalization and Game apps show strong average ratings, while Finance is an exception where free apps perform better than paid apps.
