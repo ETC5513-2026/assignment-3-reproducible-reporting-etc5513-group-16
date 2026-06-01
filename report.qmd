@@ -22,3 +22,84 @@ This report investigates the key factors that influence mobile app success on th
 ## Introduction
 
 The Google Play Store hosts over three million applications, making it one of the most competitive digital marketplaces in the world. Understanding what drives app success is critical for developers, investors, and product managers seeking to maximise reach and user satisfaction. Prior research suggests that app ratings serve as a primary signal of quality, directly influencing download decisions. However, the relationship between pricing, category, and performance remains incompletely understood. This study addresses the question: what factors influence mobile app success in terms of ratings and installs, and how do pricing and category affect performance? We analyse the Google Play Store dataset comprising 10,840 apps across 33 categories, supplemented by over 64,000 user reviews with sentiment scores. Our methodology combines descriptive statistics, visualisation, and comparative analysis across app types and categories. The findings are intended to provide actionable insights for app development strategy. This report is structured as follows: methodology, results, discussion, and conclusions.
+
+## Methodology
+
+The data for this study were sourced from the Google Play Store Apps dataset available on Kaggle, originally scraped using web scraping techniques. The dataset comprises googleplaystore.csv, containing 10,841 app records across 13 variables including app name, category, rating, reviews, installs, type (free or paid), and price.
+
+Data cleaning was performed in R using the `tidyverse` package. Records with missing ratings were removed, and the `Installs` column was converted from character format (e.g., "1,000+") to numeric values by stripping commas and plus signs. The `Price` column was similarly cleaned by removing the dollar sign. Duplicate app entries were removed, retaining the most-reviewed version. After cleaning, 8,196 unique apps remained for analysis.
+
+@tbl-summary presents a summary of the key numeric variables in the cleaned dataset, providing an overview of the central tendency and spread of ratings, reviews, and install counts.
+
+```{r}
+#| label: tbl-summary
+#| tbl-cap: "Summary statistics of key variables in the cleaned Google Play Store dataset"
+
+library(tidyverse)
+library(knitr)
+
+apps <- read_csv("data/googleplaystore.csv", show_col_types = FALSE)
+
+apps_clean <- apps |>
+  filter(!is.na(Rating)) |>
+  filter(Rating >= 1, Rating <= 5) |>
+  mutate(
+    Installs = as.numeric(gsub("[+,]", "", Installs)),
+    Price = as.numeric(gsub("\\$", "", Price)),
+    Reviews = as.numeric(Reviews)
+  ) |>
+  distinct(App, .keep_all = TRUE)
+
+tibble(
+  Variable = c("Rating", "Reviews", "Installs"),
+  Mean = c(mean(apps_clean$Rating, na.rm = TRUE),
+           mean(apps_clean$Reviews, na.rm = TRUE),
+           mean(apps_clean$Installs, na.rm = TRUE)),
+  Median = c(median(apps_clean$Rating, na.rm = TRUE),
+             median(apps_clean$Reviews, na.rm = TRUE),
+             median(apps_clean$Installs, na.rm = TRUE)),
+  SD = c(sd(apps_clean$Rating, na.rm = TRUE),
+         sd(apps_clean$Reviews, na.rm = TRUE),
+         sd(apps_clean$Installs, na.rm = TRUE)),
+  Min = c(min(apps_clean$Rating, na.rm = TRUE),
+          min(apps_clean$Reviews, na.rm = TRUE),
+          min(apps_clean$Installs, na.rm = TRUE)),
+  Max = c(max(apps_clean$Rating, na.rm = TRUE),
+          max(apps_clean$Reviews, na.rm = TRUE),
+          max(apps_clean$Installs, na.rm = TRUE))
+) |>
+  mutate(across(where(is.numeric), ~ format(round(.x, 2), big.mark = ","))) |>
+  kable()
+```
+
+To examine the relationship between pricing strategy and app performance, we compared the average ratings of free and paid apps across the ten most common categories. @fig-rating-by-type visualises this comparison using a grouped bar chart.
+
+```{r}
+#| label: fig-rating-by-type
+#| fig-cap: "Average app rating by category and pricing type (free vs paid) for the top 10 categories"
+#| fig-width: 7
+#| fig-height: 3.5
+
+top_categories <- apps_clean |>
+  count(Category, sort = TRUE) |>
+  slice_head(n = 10) |>
+  pull(Category)
+
+apps_clean |>
+  filter(Category %in% top_categories, Type %in% c("Free", "Paid")) |>
+  group_by(Category, Type) |>
+  summarise(Avg_Rating = mean(Rating), .groups = "drop") |>
+  ggplot(aes(x = reorder(Category, Avg_Rating), y = Avg_Rating, fill = Type)) +
+  geom_col(position = "dodge", width = 0.7) +
+  coord_flip(ylim = c(3.5, 4.6)) +
+  labs(
+    x = "Category",
+    y = "Average Rating",
+    fill = "App Type"
+  ) +
+  theme_minimal(base_size = 11) +
+  scale_fill_manual(values = c("Free" = "#4A90D9", "Paid" = "#D94A4A"))
+```
+
+Descriptive statistics and visualisations were used throughout the analysis. All computations were conducted in R (version 4.4), with `ggplot2` for plotting and `knitr` for table formatting, ensuring full reproducibility.
+
