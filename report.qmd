@@ -9,6 +9,8 @@ format:
   pdf:
     toc: true
     toc-title: "Table of Contents"
+bibliography: references.bib
+nocite: '@*'
 execute:
   echo: false
   warning: false
@@ -167,3 +169,16 @@ apps_clean |>
 @tbl-category-rating presents free and paid app counts alongside average ratings across the top 10 categories. Free apps dominate every category in volume, with Family and Game recording the highest counts. Personalization and Game emerge as the highest-rated categories overall, reflecting strong user engagement in entertainment-driven apps. Notably, paid apps consistently achieve marginally higher average ratings than free apps across most categories, with Personalization and Game showing the most pronounced differences. Finance, however, is a notable exception where free apps outperform. These findings confirm that free apps dominate in quantity, but paid apps deliver slightly higher user satisfaction across most categories.
 
 
+## Discussion
+The results show that pricing strategy is an important factor in app performance. Free apps receive much higher install volumes than paid apps, which means that users are more likely to download apps when there is no upfront cost. This makes free apps more effective for reaching a large audience.
+However, paid apps often have slightly higher average ratings across most top categories. This may suggest that paid users are more engaged or that paid apps provide more specialised value. Category also matters, as Personalization and Game apps show strong average ratings, while Finance is an exception where free apps perform better than paid apps.
+
+## Conclusion
+In conclusion, the analysis shows that mobile app success depends on both pricing strategy and app category. Free apps are more successful in generating installs, while paid apps tend to achieve slightly higher average ratings in many categories. This means that install volume and user satisfaction represent different aspects of app performance.That means a free pricing model is more effective for maximising user reach, especially in competitive categories such as Family and Game. However, paid apps can still perform well when they provide strong value and maintain high user satisfaction. Therefore, software developers shouldn't evaluate app success using only downloads or ratings. A more complete assessment should consider installs, ratings, category, and pricing strategy together.
+
+## Recommendation
+Developers who aim to increase downloads and expand their market reach should consider using a free or freemium pricing model. Since free apps achieve substantially higher install volumes, this approach can help attract more users and build a larger audience. Developers can then use alternative monetisation strategies such as in-app purchases, subscriptions, or advertising.
+
+For paid apps, developers should focus on delivering clear value and a high-quality user experience. Since paid apps generally have lower install volumes, strong ratings are important for building user trust and justifying the upfront cost. Paid app developers should clearly communicate the app’s benefits through descriptions, screenshots, reviews, and feature lists.
+
+## References
