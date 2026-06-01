@@ -9,6 +9,9 @@ format:
   pdf:
     toc: true
     toc-title: "Table of Contents"
+    include-in-header:
+      text: |
+        \usepackage{float}
 bibliography: references.bib
 nocite: '@*'
 execute:
@@ -81,6 +84,7 @@ To examine the relationship between pricing strategy and app performance, we com
 #| fig-cap: "Average app rating by category and pricing type (free vs paid) for the top 10 categories"
 #| fig-width: 7
 #| fig-height: 3.5
+#| fig-pos: "H"
 
 top_categories <- apps_clean |>
   count(Category, sort = TRUE) |>
@@ -107,14 +111,16 @@ Descriptive statistics and visualisations were used throughout the analysis. All
 
 
 
-## RESULTS 
+## Results
 
+@fig-installs-by-type reveals a stark contrast in install volumes between free and paid apps. Free apps achieve a considerably higher median install count, with a wide interquartile range indicating that top-performing free apps attract massive user bases. Paid apps display a notably lower median with a more tightly compressed distribution, suggesting most paid apps accumulate relatively few installs. A low outlier further highlights that some paid apps struggle to even gain meaningful traction. These findings confirm that pricing strategy is a fundamental driver of app reach, with free apps commanding exponentially greater user acquisition.
 
 ```{r}
 #| label: fig-installs-by-type
 #| fig-cap: "Install volume distribution by app pricing type (free vs paid) on a log scale"
 #| fig-width: 7
 #| fig-height: 4
+#| fig-pos: "H"
 
 # Boxplot comparing install distributions for free vs paid apps
 
@@ -131,9 +137,6 @@ apps_clean |>
   scale_fill_manual(values = c("Free" = "#4A90D9", "Paid" = "#D94A4A")) +
   theme(legend.position = "none")
 ```
-
-
-@fig-installs-by-type reveals a stark contrast in install volumes between free and paid apps. Free apps achieve a considerably higher median install count, with a wide interquartile range indicating that top-performing free apps attract massive user bases. Paid apps display a notably lower median with a more tightly compressed distribution, suggesting most paid apps accumulate relatively few installs. A low outlier further highlights that some paid apps struggle to even gain meaningful traction. These findings confirm that pricing strategy is a fundamental driver of app reach, with free apps commanding exponentially greater user acquisition.
 
 
 
