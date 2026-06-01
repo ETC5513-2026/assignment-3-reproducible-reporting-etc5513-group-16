@@ -22,19 +22,18 @@ execute:
 
 ## Executive Summary
 
-This report investigates the key factors that influence mobile app success on the Google Play Store, focusing on ratings, install counts, pricing strategy, and app category. Using a dataset of over 10,000 apps combined with user review sentiment data, we find that free apps consistently attract higher install volumes, while paid apps tend to maintain marginally higher average ratings. Category emerges as a significant differentiator, with productivity and health apps outperforming entertainment categories in user satisfaction. Based on these findings, we recommend that developers prioritise free-with-monetisation models and invest in user experience within high-engagement categories.
+This report investigates the key factors that influence mobile app success on the Google Play Store, focusing on ratings, install counts, pricing strategy, and app category. Drawing on a cleaned dataset of more than 8,000 apps, we find that free apps consistently attract far higher install volumes, while paid apps tend to maintain marginally higher average ratings. App category is a clear differentiator, with Personalization and Game apps recording the highest average ratings among the most populous categories, reflecting strong engagement in entertainment and customisation-driven apps. We therefore recommend that developers adopt free-with-monetisation models to maximise reach while prioritising user experience in high-engagement categories.
 
 ## Introduction
 
-The Google Play Store hosts over three million applications, making it one of the most competitive digital marketplaces in the world. Understanding what drives app success is critical for developers, investors, and product managers seeking to maximise reach and user satisfaction. Prior research suggests that app ratings serve as a primary signal of quality, directly influencing download decisions. However, the relationship between pricing, category, and performance remains incompletely understood. This study addresses the question: what factors influence mobile app success in terms of ratings and installs, and how do pricing and category affect performance? We analyse the Google Play Store dataset comprising 10,840 apps across 33 categories, supplemented by over 64,000 user reviews with sentiment scores. Our methodology combines descriptive statistics, visualisation, and comparative analysis across app types and categories. The findings are intended to provide actionable insights for app development strategy. This report is structured as follows: methodology, results, discussion, and conclusions.
+The Google Play Store hosts over three million applications, making it one of the most competitive digital marketplaces in the world. Understanding what drives app success is critical for developers, investors, and product managers seeking to maximise reach and user satisfaction. Prior research suggests that app ratings serve as a primary signal of quality, directly influencing download decisions. However, the relationship between pricing, category, and performance remains incompletely understood. This study addresses the question: what factors influence mobile app success in terms of ratings and installs, and how do pricing and category affect performance? We analyse the Google Play Store dataset comprising 10,841 apps across 33 categories, supplemented by over 64,000 user reviews with sentiment scores. Our methodology combines descriptive statistics, visualisation, and comparative analysis across app types and categories. The findings are intended to provide actionable insights for app development strategy. The remainder of this report sets out the methodology, presents the results, and then discusses their implications before drawing conclusions.
 
 ## Methodology
 
-The data for this study were sourced from the Google Play Store Apps dataset available on Kaggle, originally scraped using web scraping techniques. The dataset comprises googleplaystore.csv, containing 10,841 app records across 13 variables including app name, category, rating, reviews, installs, type (free or paid), and price.
+Building on this research question, the data were sourced from the Google Play Store Apps dataset on Kaggle, originally collected through web scraping. The dataset comprises googleplaystore.csv, containing 10,841 app records across 13 variables including app name, category, rating, reviews, installs, type (free or paid), and price.
 
-Data cleaning was performed in R using the `tidyverse` package. Records with missing ratings were removed, and the `Installs` column was converted from character format (e.g., "1,000+") to numeric values by stripping commas and plus signs. The `Price` column was similarly cleaned by removing the dollar sign. Duplicate app entries were removed, retaining the most-reviewed version. After cleaning, 8,196 unique apps remained for analysis.
+Data cleaning was performed in R using the tidyverse package. Records with missing ratings were removed, and the Installs column was converted from character format (e.g., "1,000+") to numeric values by stripping commas and plus signs. The Price column was similarly cleaned by removing the dollar sign. Duplicate app entries were removed, retaining the first occurrence of each app. After cleaning, 8,196 unique apps remained for analysis.
 
-@tbl-summary presents a summary of the key numeric variables in the cleaned dataset, providing an overview of the central tendency and spread of ratings, reviews, and install counts.
 
 ```{r}
 #| label: tbl-summary
@@ -77,11 +76,12 @@ tibble(
   kable()
 ```
 
-To examine the relationship between pricing strategy and app performance, we compared the average ratings of free and paid apps across the ten most common categories. @fig-rating-by-type visualises this comparison using a grouped bar chart.
+@tbl-summary presents summary statistics for key numeric variables. The average app rating of 4.17 suggests generally positive user sentiment, with a low standard deviation of 0.54 indicating consistent rating behaviour. However, the reviews and installs variables reveal substantial skewness; the mean reviews of 255,251 far exceeds the median of 3,004, and mean installs of 9,165,090 dwarfs the median of 100,000. This confirms that a small number of exceptionally popular apps drive the overall averages,  while the majority attract modest engagement.
+
 
 ```{r}
-#| label: fig-rating-by-type
-#| fig-cap: "Average app rating by category and pricing type (free vs paid) for the top 10 categories"
+#| label: fig-app-distribution
+#| fig-cap: "Distribution of free and paid apps across the top 10 categories" 
 #| fig-width: 7
 #| fig-height: 3.5
 #| fig-pos: "H"
@@ -93,27 +93,25 @@ top_categories <- apps_clean |>
 
 apps_clean |>
   filter(Category %in% top_categories, Type %in% c("Free", "Paid")) |>
-  group_by(Category, Type) |>
-  summarise(Avg_Rating = mean(Rating), .groups = "drop") |>
-  ggplot(aes(x = reorder(Category, Avg_Rating), y = Avg_Rating, fill = Type)) +
+  count(Category, Type) |>
+  ggplot(aes(x = reorder(Category, n), y = n, fill = Type)) +
   geom_col(position = "dodge", width = 0.7) +
-  coord_flip(ylim = c(3.5, 4.6)) +
+  coord_flip() +
   labs(
     x = "Category",
-    y = "Average Rating",
+    y = "Number of Apps",
     fill = "App Type"
   ) +
   theme_minimal(base_size = 11) +
   scale_fill_manual(values = c("Free" = "#4A90D9", "Paid" = "#D94A4A"))
 ```
 
-Descriptive statistics and visualisations were used throughout the analysis. All computations were conducted in R (version 4.4), with `ggplot2` for plotting and `knitr` for table formatting, ensuring full reproducibility.
+@fig-app-distribution illustrates dataset composition across the top 10 categories by pricing type. Free apps substantially outnumber paid apps in every category, with Family, Game and Tools recording the highest counts. Paid apps represent a minimal fraction across all categories, particularly in Finance and Business. This compositional imbalance is an important consideration when interpreting subsequent analyses.
 
+Descriptive statistics and visualisations were used throughout. All computations were conducted in R (version 4.5.2), with ggplot2 for plotting and knitr for table formatting, ensuring full reproducibility.
 
 
 ## Results
-
-@fig-installs-by-type reveals a stark contrast in install volumes between free and paid apps. Free apps achieve a considerably higher median install count, with a wide interquartile range indicating that top-performing free apps attract massive user bases. Paid apps display a notably lower median with a more tightly compressed distribution, suggesting most paid apps accumulate relatively few installs. A low outlier further highlights that some paid apps struggle to even gain meaningful traction. These findings confirm that pricing strategy is a fundamental driver of app reach, with free apps commanding exponentially greater user acquisition.
 
 ```{r}
 #| label: fig-installs-by-type
@@ -139,6 +137,7 @@ apps_clean |>
 ```
 
 
+Having established the dataset's composition, we first compare reach across pricing types. @fig-installs-by-type reveals a stark contrast in install volumes between free and paid apps. Free apps reach a considerably higher median install count, with a wide interquartile range showing that top performers attract massive user bases. Paid apps display a notably lower median within a more tightly compressed distribution, suggesting most accumulate relatively few installs, and a low outlier highlights that some struggle to gain meaningful traction. These findings confirm that pricing is a fundamental driver of reach, with free apps commanding greater user acquisition.
 
 ```{r}
 #| label: tbl-category-rating
@@ -169,18 +168,23 @@ apps_clean |>
   kable()
 ```
 
-@tbl-category-rating presents free and paid app counts alongside average ratings across the top 10 categories. Free apps dominate every category in volume, with Family and Game recording the highest counts. Personalization and Game emerge as the highest-rated categories overall, reflecting strong user engagement in entertainment-driven apps. Notably, paid apps consistently achieve marginally higher average ratings than free apps across most categories, with Personalization and Game showing the most pronounced differences. Finance, however, is a notable exception where free apps outperform. These findings confirm that free apps dominate in quantity, but paid apps deliver slightly higher user satisfaction across most categories.
+Reach is only one side of success, so we turn to satisfaction. @tbl-category-rating presents free and paid app counts alongside average ratings across the top 10 categories. Free apps dominate every category in volume, led by Family and Game, while Personalization and Game record the highest ratings overall, reflecting strong engagement in entertainment and customisation apps. As the table shows, paid apps achieve marginally higher ratings than free apps in most categories, with Finance the main exception where free apps outperform. Free apps thus lead in quantity, but paid apps deliver slightly higher user satisfaction.
 
 
 ## Discussion
-The results show that pricing strategy is an important factor in app performance. Free apps receive much higher install volumes than paid apps, which means that users are more likely to download apps when there is no upfront cost. This makes free apps more effective for reaching a large audience.
-However, paid apps often have slightly higher average ratings across most top categories. This may suggest that paid users are more engaged or that paid apps provide more specialised value. Category also matters, as Personalization and Game apps show strong average ratings, while Finance is an exception where free apps perform better than paid apps.
+
+These results show that pricing strategy clearly shapes app performance, but that its effect depends on the metric considered. The much higher install volumes of free apps likely reflect consumer reluctance to pay upfront; users are more willing to try an app when there is no financial commitment, making a free model effective for maximising reach.
+
+However, paid apps often have slightly higher average ratings across most top categories. This pattern may indicate that paid users represent a more intentional and engaged audience, having already demonstrated willingness to invest in the app. Alternatively, paid apps may deliver more specialised or refined experiences that better meet user expectations. Category emerges as an additional differentiator of user satisfaction. Personalization and Game categories record the strongest average ratings, suggesting that user engagement is particularly high in entertainment and customisation-driven apps. Finance, however, presents a notable exception, free apps outperform paid counterparts in this category, potentially reflecting the sensitivity of financial users to trust and accessibility over exclusivity.
+
 
 ## Conclusion
-In conclusion, the analysis shows that mobile app success depends on both pricing strategy and app category. Free apps are more successful in generating installs, while paid apps tend to achieve slightly higher average ratings in many categories. This means that install volume and user satisfaction represent different aspects of app performance.That means a free pricing model is more effective for maximising user reach, especially in competitive categories such as Family and Game. However, paid apps can still perform well when they provide strong value and maintain high user satisfaction. Therefore, software developers shouldn't evaluate app success using only downloads or ratings. A more complete assessment should consider installs, ratings, category, and pricing strategy together.
+
+In conclusion, the analysis shows that mobile app success depends on both pricing strategy and app category. Free apps are more successful in generating installs, while paid apps tend to achieve slightly higher average ratings in many categories. This means that install volume and user satisfaction represent different aspects of app performance. That means a free pricing model is more effective for maximising user reach, especially in competitive categories such as Family and Game. However, paid apps can still perform well when they provide strong value and maintain high user satisfaction. Therefore, software developers shouldn't evaluate app success using only downloads or ratings. A more complete assessment should consider installs, ratings, category, and pricing strategy together.
 
 ## Recommendation
-Developers who aim to increase downloads and expand their market reach should consider using a free or freemium pricing model. Since free apps achieve substantially higher install volumes, this approach can help attract more users and build a larger audience. Developers can then use alternative monetisation strategies such as in-app purchases, subscriptions, or advertising.
+
+Following directly from these conclusions, developers who aim to increase downloads and expand their market reach should consider using a free or freemium pricing model. Since free apps achieve substantially higher install volumes, this approach can help attract more users and build a larger audience. Developers can then use alternative monetisation strategies such as in-app purchases, subscriptions, or advertising.
 
 For paid apps, developers should focus on delivering clear value and a high-quality user experience. Since paid apps generally have lower install volumes, strong ratings are important for building user trust and justifying the upfront cost. Paid app developers should clearly communicate the app’s benefits through descriptions, screenshots, reviews, and feature lists.
 
