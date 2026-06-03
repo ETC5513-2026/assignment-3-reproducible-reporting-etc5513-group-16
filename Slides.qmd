@@ -1,0 +1,54 @@
+---
+title: "Google Play Store App Ratings, Installs and Pricing Analysis"
+subtitle: "ETC5513 Assignment 3 — Group 16"
+author: "Hanwen Liu, Pratyush Kumar, Chenuli Muthukuda Arachchige, Shenyu He"
+format:
+  revealjs:
+    theme: simple
+    slide-number: true
+    transition: fade
+editor: visual
+execute:
+  echo: false
+  warning: false
+  message: false
+---
+
+## Problem Introduction
+
+- The Google Play Store hosts millions of apps, making it one of the most competitive digital marketplaces in the world.
+
+- For developers, understanding **what drives app success** is critical to maximising reach and user satisfaction.
+
+- Two key success metrics: **user ratings** and **install counts**.
+
+::: fragment
+**Research question:** What factors influence mobile app success in terms of ratings and installs, and how do pricing and category affect performance?
+:::
+
+## Dataset Description
+
+```{r}
+library(tidyverse)
+apps <- read_csv("data/googleplaystore.csv", show_col_types = FALSE)
+
+apps_clean <- apps |>
+  filter(!is.na(Rating), Rating >= 1, Rating <= 5) |>
+  mutate(
+    Installs = as.numeric(gsub("[+,]", "", Installs)),
+    Price = as.numeric(gsub("\\$", "", Price))
+  ) |>
+  distinct(App, .keep_all = TRUE)
+```
+
+- **Source:** Google Play Store Apps dataset (Kaggle), collected via web scraping
+
+- **`googleplaystore.csv`** — 10,841 raw records, reduced to **`r format(nrow(apps_clean), big.mark = ",")` unique apps** after cleaning, across **`r length(unique(apps_clean$Category))` categories**
+
+  - Key variables: `Rating`, `Installs`, `Type` (Free/Paid), `Price`, `Category`
+
+- **`googleplaystore_user_reviews.csv`** — over 64,000 user reviews with sentiment scores
+
+::: fragment
+Records with missing ratings and duplicate apps were removed to ensure data quality.
+:::
