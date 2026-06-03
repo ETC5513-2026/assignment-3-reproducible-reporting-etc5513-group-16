@@ -3,7 +3,6 @@
 .Rproj.user/
 *_cache/
 *_files/
-*.pdf
 renv/library/
 renv/staging/
 .DS_Store
