@@ -42,7 +42,7 @@ Data cleaning was performed in R using the tidyverse package. Records with missi
 library(tidyverse)
 library(knitr)
 
-# Load data
+# Load the data
 apps <- read_csv("data/googleplaystore.csv", show_col_types = FALSE)
 
 # Clean data: remove missing ratings, convert columns to numeric, remove duplicates
