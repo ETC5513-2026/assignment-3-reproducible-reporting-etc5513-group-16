@@ -42,8 +42,10 @@ Data cleaning was performed in R using the tidyverse package. Records with missi
 library(tidyverse)
 library(knitr)
 
+# Load data
 apps <- read_csv("data/googleplaystore.csv", show_col_types = FALSE)
 
+# Clean data: remove missing ratings, convert columns to numeric, remove duplicates
 apps_clean <- apps |>
   filter(!is.na(Rating)) |>
   filter(Rating >= 1, Rating <= 5) |>
@@ -54,6 +56,7 @@ apps_clean <- apps |>
   ) |>
   distinct(App, .keep_all = TRUE)
 
+# Build summary statistics table
 tibble(
   Variable = c("Rating", "Reviews", "Installs"),
   Mean = c(mean(apps_clean$Rating, na.rm = TRUE),
@@ -74,9 +77,10 @@ tibble(
 ) |>
   mutate(across(where(is.numeric), ~ format(round(.x, 2), big.mark = ","))) |>
   kable()
+
 ```
 
-@tbl-summary presents summary statistics for key numeric variables. The average app rating of 4.17 suggests generally positive user sentiment, with a low standard deviation of 0.54 indicating consistent rating behaviour. However, the reviews and installs variables reveal substantial skewness; the mean reviews of 255,251 far exceeds the median of 3,004, and mean installs of 9,165,090 dwarfs the median of 100,000. This confirms that a small number of exceptionally popular apps drive the overall averages,  while the majority attract modest engagement.
+@tbl-summary presents summary statistics for key numeric variables. The average app rating of 4.17 suggests generally positive user sentiment, with a low standard deviation of 0.54 indicating consistent rating behaviour. However, the reviews and installs variables reveal substantial skewness; the mean reviews of 255,251 far exceeds the median of 3,004, and mean installs of 9,165,090 dwarfs the median of 100,000. This confirms that a small number of exceptionally popular apps drive the overall averages, while the majority attract modest engagement.
 
 
 ```{r}
@@ -86,11 +90,13 @@ tibble(
 #| fig-height: 3.5
 #| fig-pos: "H"
 
+# Identify top 10 categories by app count
 top_categories <- apps_clean |>
   count(Category, sort = TRUE) |>
   slice_head(n = 10) |>
   pull(Category)
 
+# Plot free vs paid app counts across top 10 categories
 apps_clean |>
   filter(Category %in% top_categories, Type %in% c("Free", "Paid")) |>
   count(Category, Type) |>
@@ -121,7 +127,7 @@ Descriptive statistics and visualisations were used throughout. All computations
 #| fig-pos: "H"
 
 # Boxplot comparing install distributions for free vs paid apps
-
+# Log scale used to handle the wide range of install counts
 apps_clean |>
   filter(Type %in% c("Free", "Paid"), Installs > 0) |>
   ggplot(aes(x = Type, y = Installs, fill = Type)) +
@@ -142,8 +148,10 @@ Having established the dataset's composition, we first compare reach across pric
 ```{r}
 #| label: tbl-category-rating
 #| tbl-cap: "Comparison of free and paid app counts and average ratings across the top 10 categories"
+#| tbl-pos: "H"
 
 
+# Summarise app counts and average ratings by category and pricing type
 apps_clean |>
   filter(Category %in% top_categories, Type %in% c("Free", "Paid")) |>
   group_by(Category, Type) |>
@@ -152,11 +160,13 @@ apps_clean |>
     Avg_Rating = round(mean(Rating, na.rm = TRUE), 2),
     .groups = "drop"
   ) |>
+  # Reshape to wide format for side by side comparison of free vs paid
   pivot_wider(
     names_from = Type,
     values_from = c(Count, Avg_Rating),
     names_glue = "{Type}_{.value}"
   ) |>
+  # Rename columns for readability
   rename(
     "Category" = Category,
     "Free Apps" = Free_Count,
