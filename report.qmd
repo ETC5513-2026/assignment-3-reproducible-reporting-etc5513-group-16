@@ -86,8 +86,9 @@ tibble(
 ```{r}
 #| label: fig-app-distribution
 #| fig-cap: "Distribution of free and paid apps across the top 10 categories" 
-#| fig-width: 7
-#| fig-height: 3.5
+#| fig-width: 8
+#| fig-height: 7
+#| out-width: "100%"
 #| fig-pos: "H"
 
 # Identify top 10 categories by app count
@@ -108,7 +109,7 @@ apps_clean |>
     y = "Number of Apps",
     fill = "App Type"
   ) +
-  theme_minimal(base_size = 11) +
+  theme_minimal(base_size = 14) +
   scale_fill_manual(values = c("Free" = "#4A90D9", "Paid" = "#D94A4A"))
 ```
 
