@@ -1,3 +1,4 @@
+```         
 ---
 title: "Google Play Store App Ratings, Installs and Pricing Analysis"
 subtitle: "ETC5513 Assignment 3 — Group 16"
@@ -13,6 +14,7 @@ execute:
   warning: false
   message: false
 ---
+```
 
 ## Problem Introduction
 
@@ -114,3 +116,16 @@ apps_clean |>
 
 - Free apps **vastly outnumber** paid apps in every category
 - Family, Game and Tools are the largest categories
+
+## Discussion
+- Pricing strategy clearly affects app performance, but its impact depends on the success metric being considered.
+- Free apps are more effective for maximising user reach because users are more willing to download an app when there is no upfront cost.
+- Paid apps often achieve slightly higher average ratings in many top categories, suggesting that paid users may be more intentional and value-focused.
+- App category also plays an important role. Personalization and Game apps show strong user engagement, while Finance is an exception where free apps perform better than paid apps.
+
+## Conclusion and Recommendation
+- Mobile app success depends on pricing strategy, app category, install volume, and user ratings.
+- Free apps are more successful in generating installs, especially in competitive categories such as Family and Game.
+- Paid apps can still perform well if they provide clear value, strong functionality, and a high-quality user experience.
+- Developers who want to increase downloads should consider using a free or freemium model, with monetisation through in-app purchases, subscriptions, or advertising.
+- Paid app developers should focus on building user trust and clearly communicating the app’s benefits through descriptions, screenshots, reviews, and feature lists.
