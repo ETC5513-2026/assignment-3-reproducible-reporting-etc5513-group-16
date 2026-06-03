@@ -73,7 +73,6 @@ Cleaning was performed in R using the `tidyverse` package:
 
 library(knitr)
 library(kableExtra)
-
 apps_stats <- apps_clean |>
   mutate(Reviews = as.numeric(Reviews))
 
@@ -129,6 +128,7 @@ apps_clean |>
 #| fig-width: 5
 #| fig-height: 4
 #| out-width: "100%"
+
 apps_clean |>
   filter(Type %in% c("Free", "Paid"), Installs > 0) |>
   ggplot(aes(x = Type, y = Installs, fill = Type)) +
@@ -146,10 +146,12 @@ apps_clean |>
 
 :::: {.column width="40%"}
 ::: incremental
+
 - Free apps achieve substantially higher median install counts
 - Paid apps cluster at lower installs with a compressed distribution
 - Some paid apps struggle to gain meaningful traction
 - Pricing strategy is a fundamental driver of app reach
+
 :::
 ::::
 ::::::
@@ -184,11 +186,13 @@ apps_clean |>
 :::
 
 ::: incremental
+
 - Family and Game dominate in app volume across all categories
 - Personalization and Game emerge as the highest-rated categories
 - Paid apps achieve marginally higher ratings than free apps overall
 - Finance is a notable exception where free apps outperform paid
 :::
+
 
 ## Discussion
 
