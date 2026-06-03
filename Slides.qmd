@@ -52,3 +52,65 @@ apps_clean <- apps |>
 ::: fragment
 Records with missing ratings and duplicate apps were removed to ensure data quality.
 :::
+
+## Methodology — Data Cleaning
+
+Cleaning was performed in R using the `tidyverse` package:
+
+- Removed records with **missing ratings**
+- Converted `Installs` from text (e.g. "1,000+") to **numeric** values
+- Cleaned `Price` (removed the `$` symbol)
+- Removed **duplicate apps**, retaining the first occurrence
+
+::: fragment
+**Result: `r format(nrow(apps_clean), big.mark = ",")` unique apps** retained for analysis.
+:::
+
+## Methodology — Summary Statistics
+
+```{apps_stats <- apps_clean |>}
+  mutate(Reviews = as.numeric(Reviews))
+
+tibble(
+  Variable = c("Rating", "Reviews", "Installs"),
+  Mean = c(mean(apps_stats$Rating, na.rm = TRUE),
+           mean(apps_stats$Reviews, na.rm = TRUE),
+           mean(apps_stats$Installs, na.rm = TRUE)),
+  Median = c(median(apps_stats$Rating, na.rm = TRUE),
+             median(apps_stats$Reviews, na.rm = TRUE),
+             median(apps_stats$Installs, na.rm = TRUE)),
+  SD = c(sd(apps_stats$Rating, na.rm = TRUE),
+         sd(apps_stats$Reviews, na.rm = TRUE),
+         sd(apps_stats$Installs, na.rm = TRUE))
+) |>
+  mutate(across(where(is.numeric), ~ format(round(.x, 2), big.mark = ","))) |>
+  kable()
+```
+
+- Ratings are consistently high (mean **4.17**, low spread)
+- Reviews & installs are **heavily skewed** — a few apps dominate the averages
+
+## Methodology — Dataset Composition
+
+```{r}
+#| fig-width: 8
+#| fig-height: 3.8
+
+top_categories <- apps_clean |>
+  count(Category, sort = TRUE) |>
+  slice_head(n = 10) |>
+  pull(Category)
+
+apps_clean |>
+  filter(Category %in% top_categories, Type %in% c("Free", "Paid")) |>
+  count(Category, Type) |>
+  ggplot(aes(x = reorder(Category, n), y = n, fill = Type)) +
+  geom_col(position = "dodge", width = 0.7) +
+  coord_flip() +
+  labs(x = "Category", y = "Number of Apps", fill = "App Type") +
+  theme_minimal(base_size = 13) +
+  scale_fill_manual(values = c("Free" = "#4A90D9", "Paid" = "#D94A4A"))
+```
+
+- Free apps **vastly outnumber** paid apps in every category
+- Family, Game and Tools are the largest categories
