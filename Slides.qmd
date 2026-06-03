@@ -70,7 +70,11 @@ Cleaning was performed in R using the `tidyverse` package:
 
 ## Methodology — Summary Statistics
 
-```{apps_stats <- apps_clean |>}
+```{r}
+
+library(knitr)
+
+apps_stats <- apps_clean |>
   mutate(Reviews = as.numeric(Reviews))
 
 tibble(
@@ -116,6 +120,71 @@ apps_clean |>
 
 - Free apps **vastly outnumber** paid apps in every category
 - Family, Game and Tools are the largest categories
+
+
+## Results — Pricing & Installs
+```{r}
+#| fig-width: 7
+#| fig-height: 4
+
+
+# Boxplot comparing install distributions for free vs paid apps
+# Log scale used to handle the wide range of install counts
+apps_clean |>
+  filter(Type %in% c("Free", "Paid"), Installs > 0) |>
+  ggplot(aes(x = Type, y = Installs, fill = Type)) +
+  geom_boxplot(outlier.alpha = 0.2, width = 0.5) +
+  scale_y_log10(labels = scales::comma) +
+  labs(
+    x = "App Type",
+    y = "Number of Installs (log scale)"
+  ) +
+  theme_minimal(base_size = 11) +
+  scale_fill_manual(values = c("Free" = "#4A90D9", "Paid" = "#D94A4A")) +
+  theme(legend.position = "none")
+
+```
+
+- Free apps achieve substantially higher median install counts
+- Paid apps cluster at lower installs with a compressed distribution
+- Some paid apps struggle to gain meaningful traction
+- Pricing strategy is a fundamental driver of app reach
+
+
+## Results - Comparison of free and paid app counts and average ratings across the top 10 categorie
+
+```{r}
+# Summarise app counts and average ratings by category and pricing type
+apps_clean |>
+  filter(Category %in% top_categories, Type %in% c("Free", "Paid")) |>
+  group_by(Category, Type) |>
+  summarise(
+    Count = n(),
+    Avg_Rating = round(mean(Rating, na.rm = TRUE), 2),
+    .groups = "drop"
+  ) |>
+  # Reshape to wide format for side by side comparison of free vs paid
+  pivot_wider(
+    names_from = Type,
+    values_from = c(Count, Avg_Rating),
+    names_glue = "{Type}_{.value}"
+  ) |>
+  # Rename columns for readability
+  rename(
+    "Category" = Category,
+    "Free Apps" = Free_Count,
+    "Paid Apps" = Paid_Count,
+    "Avg Rating (Free Apps)" = Free_Avg_Rating,
+    "Avg Rating (Paid Apps)" = Paid_Avg_Rating
+  ) |>
+  arrange(desc(`Free Apps`)) |>
+  kable()
+```
+
+- Family and Game dominate in app volume across all categories
+- Personalization and Game emerge as the highest-rated categories
+- Paid apps achieve marginally higher ratings than free apps overall
+- Finance is a notable exception where free apps outperform paid
 
 ## Discussion
 - Pricing strategy clearly affects app performance, but its impact depends on the success metric being considered.
